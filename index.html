@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+<p><font size = 6><center>Universidades Públicas de Centroamérica</center></p>
+    <meta charset='utf-8' />
+    <title>Universidades de CentroAmérica</title> 
+
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+		crossorigin=""/>
+  
+		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+		integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+		crossorigin="">
+		</script>
+		
+		<script src="http://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+		<script src="leaflet-providers.js"></script>
+
+		<script src="leaflet-dvf.js"></script> 
+		<script src="leaflet.dvf.regularpolygon.js"></script>
+		
+		<!--ESRIMaps-->
+		<script src="https://unpkg.com/esri-leaflet@2.3.0/dist/esri-leaflet.js"
+		integrity="sha512-1tScwpjXwwnm6tTva0l0/ZgM3rYNbdyMj5q6RSQMbNX6EUMhYDE3pMRGZaT41zHEvLoWEK7qFEJmZDOoDMU7/Q=="
+		crossorigin=""></script>
+		
+		<link rel="stylesheet" href="Control.MiniMap.css" />
+		<script src="Control.MiniMap.js" type= "text/javascript">
+		</script>
+		
+		<link rel="stylesheet" href="L.Control.MousePosition.css"/>
+		<script src="L.Control.MousePosition.js" type="text/javascript"></script>
+		<script type="text/javascript" src="http://maps.stamen.com/js/tile.stamen.js?v1.3.0"></script>	
+		
+														<!--MakiMarkers-->
+		<script src="Leaflet.MakiMarkers.js"></script>	
+		<link rel='stylesheet' href='leaflet.fullscreen.css'/>
+		<script src='Leaflet.fullscreen.js'></script>
+			
+														<!-- GeoJson -->
+		<script type="text/javascript" src="POLUNAHCU.js"></script>												
+														
+</head>
+    
+	
+<body>
+		
+	<body style="background-color:#D0D3D4;"></body>
+	
+	<center><div id="map" style="width: 1400px; height:600px;"></div></center>
+	
+	<style>
+			#boton {position: absolute; left: 800px; top: 70px; z-index: 500}
+	</style> 
+		<div id="boton">
+		<button id="CostaRica">Costa Rica</button>
+		<button id="ElSalvador">El Salvador</button>
+		<button id="Guatemala">Guatemala</button>
+		<button id="Honduras">Honduras</button>
+		<button id="Nicaragua">Nicaragua</button>
+		<button id="Home"> Home</button>
+		</div>
+
+	<script type="text/javascript">
+		
+		var CostaRica = [9.932079, -84.087638];
+		    ElSalvador = [13.710948, -89.196851];
+		    Guatemala = [14.630860, -90.508630]; 
+			Honduras = [14.080202, -87.194791];
+			Nicaragua = [12.133350, -86.248574];
+						
+		var BASEMAP1 = L.esri.basemapLayer('Topographic');
+		var BASEMAP2 = L.esri.basemapLayer('Imagery');
+		var BASEMAP3 = L.esri.basemapLayer('NationalGeographic')
+		
+		var osm = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+ 	            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+ 	            id: 'mapbox.streets', accessToken: 'pk.eyJ1IjoiY3Jpc3RpYW4tMjAxOSIsImEiOiJjazA1d2VqYTYwMHVvM2dvMTZvMWYxdmRyIn0.F571FSbjIlAA9mcDDteltQ',
+		        draggable: false,
+				maxZoom: 17,
+				minZoom: 3
+		});
+					
+	    var map = L.map('map',  {
+		    center: [14.098555, -87.185688],
+			zoom: 7,
+			layers: osm,
+			zoomControl: true,
+			fullscreenControl: {pseudoFullscreen: false, position: 'topleft'}
+		});
+		
+		var osm2 = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+ 	            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+ 	            id: 'mapbox.pirates', accessToken: 'pk.eyJ1IjoiY3Jpc3RpYW4tMjAxOSIsImEiOiJjazA1d2VqYTYwMHVvM2dvMTZvMWYxdmRyIn0.F571FSbjIlAA9mcDDteltQ',
+				dragging: false,
+				maxZoom: 14,
+				minZoom: 6,
+				maxBounds: [[15.4983300, -88.036964],[15.512320, -88.011749]]
+		});
+
+        var osm3 = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+ 	    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+ 	    id: 'mapbox.streets-satellite', accessToken: 'pk.eyJ1IjoiY3Jpc3RpYW4tMjAxOSIsImEiOiJjazA1d2VqYTYwMHVvM2dvMTZvMWYxdmRyIn0.F571FSbjIlAA9mcDDteltQ'
+		})
+		
+		BaseLayers = {
+		"Satelite":osm3,
+		"Topographic":BASEMAP1,
+		"Imagery":BASEMAP2,
+		"NatGeo":BASEMAP3
+			};
+		
+		document.getElementById('CostaRica').onclick = function () { map.flyTo(CostaRica,8,); };
+		document.getElementById('ElSalvador').onclick = function () { map.flyTo(ElSalvador,10,); };
+		document.getElementById('Guatemala').onclick = function () { map.flyTo(Guatemala,8,); };
+		document.getElementById('Honduras').onclick = function () { map.flyTo(Honduras,8,); };
+		document.getElementById('Nicaragua').onclick = function () { map.flyTo(Nicaragua,12,); };
+		document.getElementById('Home').onclick = function () { map.setView(Honduras, 6)};
+		
+		
+			
+//Marcadores De Las Capitales//		
+L.MakiMarkers.accessToken = "pk.eyJ1IjoiY3Jpc3RpYW4tMjAxOSIsImEiOiJjazA1d2VqYTYwMHVvM2dvMTZvMWYxdmRyIn0.F571FSbjIlAA9mcDDteltQ"
+
+		var CAP1= L.MakiMarkers.icon ({icon:"marker-stroked", color: "#eb3434", size:"0.5"}); 
+		var CAP1= L.marker([9.933752, -84.099613],{icon:CAP1}).addTo(map);
+		CAP1.bindPopup("San José Costa Rica");			
+		
+		var CAP2= L.MakiMarkers.icon ({icon:"marker-stroked", color: "#eb3434", size:"0.5"}); 
+		var CAP2= L.marker([13.693144, -89.215596],{icon:CAP2}).addTo(map);
+		CAP2.bindPopup("San Salvador");
+		
+		var CAP3= L.MakiMarkers.icon ({icon:"marker-stroked", color: "#eb3434", size:"0.5"}); 
+		var CAP3= L.marker([14.633518, -90.501833],{icon:CAP3}).addTo(map);
+		CAP3.bindPopup("Ciudad de Guatemala");
+		
+		var CAP4= L.MakiMarkers.icon ({icon:"marker-stroked", color: "#eb3434", size:"0.5"}); 
+		var CAP4= L.marker([12.120141, -86.265330],{icon:CAP4}).addTo(map);
+		CAP4.bindPopup("Managua");
+		
+		var CAP5= L.MakiMarkers.icon ({icon:"marker-stroked", color: "#eb3434", size:"0.5"}); 
+		var CAP5= L.marker([14.074914, -87.184377],{icon:CAP5}).addTo(map);
+		CAP5.bindPopup("Tegucigalpa");
+		
+//Marcadores de las Universidedes Autónomas de Centro América //
+
+		var imagen1 = new L.RegularPolygonMarker([14.084124, -87.161889], {
+		  numberOfSides: 4,
+		  rotation: 45,
+		  radius: 30,
+		  fillColor:'transparent',
+		  fillOpacity:3,
+		  color:'red',
+		  opacity:1,
+		  weight:1,
+		  imageCircleUrl: 'HONDURAS.jpg'
+		});
+		  imagen1.bindPopup("Universidad Nacional Autonóma de Honduras");
+	
+		var imagen2 = new L.RegularPolygonMarker([14.585778, -90.552521], {
+		  numberOfSides: 4,
+		  rotation: 45,
+		  radius: 30,
+		  fillColor:'transparent',
+		  fillOpacity:3,
+		  color:'red',
+		  opacity:1,
+		  weight:1,
+		  imageCircleUrl: 'GUATEMALA.png'
+		});
+		  imagen2.bindPopup("Universidad Nacional Autonóma de San Carlos de Guatemala");		
+		
+		var imagen3 = new L.RegularPolygonMarker([9.936869, -84.050981], {
+		  numberOfSides: 4,
+		  rotation: 45,
+		  radius: 30,
+		  fillColor:'transparent',
+		  fillOpacity:3,
+		  color:'red',
+		  opacity:1,
+		  weight:1,
+		  imageCircleUrl: 'COSTARICA.jpg'
+		});
+		  imagen3.bindPopup("Universidad Nacional Autonóma de Costa Rica (UCR)");
+		
+		var imagen4 = new L.RegularPolygonMarker([12.445566, -86.880904], {
+		  numberOfSides: 4,
+		  rotation: 45,
+		  radius: 30,
+		  fillColor:'transparent',
+		  fillOpacity:3,
+		  color:'red',
+		  opacity:1,
+		  weight:1,
+		  imageCircleUrl: 'NICARAGUA.png'
+		});
+		  imagen4.bindPopup("Universidad Nacional Autonóma de Nicaragua");
+
+		var imagen5 = new L.RegularPolygonMarker([13.994407, -89.591134], {
+		  numberOfSides: 4,
+		  rotation: 45,
+		  radius: 30,
+		  fillColor:'transparent',
+		  fillOpacity:3,
+		  color:'red',
+		  opacity:1,
+		  weight:1,
+		  imageCircleUrl: 'ELSALVADOR.jpg'
+		});
+		  imagen5.bindPopup("Universidad Autónoma de Santa Ana");
+											
+//Marcadores de las Universidades Públicas de CentroAmérica//
+L.MakiMarkers.accessToken = "pk.eyJ1IjoiY3Jpc3RpYW4tMjAxOSIsImEiOiJjazA1d2VqYTYwMHVvM2dvMTZvMWYxdmRyIn0.F571FSbjIlAA9mcDDteltQ"
+//Honduras//
+		var UNIHN1= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN1= L.marker([14.429158, -87.634170],{icon:UNIHN1});
+		UNIHN1.bindPopup("<center><h2>UNAH Centro Comayagua</h2><p style=text-align:justify> Fue alrededor del año de 1980 cuando se comienzan a hacer las primeras acciones concretas para la creación de un centro universitario en Comayagua, con el objetivo de dar respuesta a la gran demanda estudiantil que persistía en aquella época. Un grupo de estudiantes universitarios de la UNAH, lucha por obtener ese proyecto, para lo cual organizaron la Asociación Comayagüense de Estudiantes Universitarios (ACEU). En el año de 1995 se creó la fundación Para el Desarrollo de Comayagua FDC, que se convierten en pioneros de la fundación del Centro Universitario Regional del Centro CURC, que inicia sus actividades el 17 de Junio de 1996 con una matrícula de 711 alumnos de ambos géneros, cabe mencionar que hoy en día cuenta con más de 3000 estudiantes. </p></center><img src='rsz_unahcomayagua.jpg'><p><a href= https://curc.unah.edu.hn/ target= _blank >Sitio Web</a></p>");		
+
+		var UNIHN2= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN2= L.marker([15.529138, -88.036203],{icon:UNIHN2});
+		UNIHN2.bindPopup("<center><h2>UNAH VALLE DE SULA</h2><p style=text-align:justify> La sede central de la Universidad Nacional se encuentra desde su fundación en la ciudad de Tegucigalpa, fueron muchos los estudiantes que en los sigos XIX y mediados del XX viajaban hasta aquella ciudad capital con el fin de continuar sus estudios académicos en educación superior. El auge de estudiantes del interior del país, motivó a los activistas sampedranos para que se fundara una sede universitaria en esta ciudad emprendiéndose la justa solicitud desde 1941, hasta el año de 1955 es que es creada la Facultad de Ciencias Económicas de San Pedro Sula, y en 1966 fue fundado el Centro de Estudios Generales de San Pedro Sula. Entre los años de 1967 a 1972 a partir de varias solicitudes de creación de sedes universitarias locales, es que fue creado el Plan de Desarrollo Universitario, con el fin de descentralizar a la UNAH, pero no fue hasta 1974 que por fin es fundado el Centro Universitario Regional del Norte (CURN). En fecha 18 de agosto de 2006 la Comisión de Transición de la Universidad (CTU) mediante Acuerdo No. 122, creó la Comisión de Apoyo a la Reforma Universitaria, cuya función principal es la de conducir el proceso de reforma en el Centro Universitario Regional del Norte.</p></center><img src='rsz_unahvalledesula.jpg'><p><a href= https://vallesula.unah.edu.hn/ target= _blank >Sitio Web</a></p>");
+
+		var UNIHN3= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN3= L.marker([14.075598, -87.187967],{icon:UNIHN3});
+		UNIHN3.bindPopup("<center><h2>UPNFM Tegucigalpa</h2> <p style=text-align:justify> La universidad pedagógica fue fundada en 1956, primeramente como Escuela Superior del Profesorado Francisco Morazán en la ciudad de Tegucigalpa la cual tenía como fin primordial ampliar los conocimientos de la rama magisterial en educación primaria y secundaria, mediante carreras académicas universitarias. </p></center><img src='rsz_upnfmtegucigalpa.jpg'><p><a href=https://web.upnfm.edu.hn/test/ target= _blank >Sitio Web</a></p>");
+
+		var UNIHN4= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN4= L.marker([14.0423, -86.5727],{icon:UNIHN4});
+		UNIHN4.bindPopup("<center><h2>UPNFM Danlí</h2></center><p style=text-align:justify> El Centro Universitario Regional Danlí, esta ubicado geográficamente en el Municipio de Danlí, pertenece al Departamento de El Paraíso y es el segundo municipio más grande del País.</p><p><img src='rsz_upnfmdanli.jpg'></p><p><a href= https://web.upnfm.edu.hn/test/index.php/curdanli target= _blank >Sitio Web</a></p>");
+
+		var UNIHN5= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN5= L.marker([15.7611, -86.8267],{icon:UNIHN5});
+		UNIHN5.bindPopup("<center><h2>UPNFM Ceiba</h2><p style=text-align:justify> Este centro reional surgió en el año 2008, en la ciudad de La Ceiba con una población de 300 estudiantes, ofreciendo en ese entonces las carreras de Hostelería y Turismo, ESAN Educación Alimentaria y Nutricional. En la actualidad, en el CURCEI, funciona lo que es el sistema de Educación Presencial Distancia CUED, Programa Especial Universitario de Formación Docente PREUFOD, Formación Inicial de Docentes FID, y Maestría en Letras y Lenguas. <p><img src='rsz_1upnfmceiba.jpg'></p><p><a href= https://web.upnfm.edu.hn/test/index.php/centro-regional-de-la-ceiba target= _blank >Sitio Web</a></p>");
+
+		var UNIHN6= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN6= L.marker([14.6643, -86.2214],{icon:UNIHN6});
+		UNIHN6.bindPopup("<center><h2>UPNFM Juticalpa</h2></center><img src='rsz_unpnfmjuticalpa.jpg'><p><a href= https://web.upnfm.edu.hn/test/index.php/centro-universitario-regional-juticalpa target= _blank >Sitio Web</a></p>");		
+                                                                     
+		var UNIHN7= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN7= L.marker([13.2959, -87.1886],{icon:UNIHN7});
+		UNIHN7.bindPopup("<center><h2>UPNFM Choluteca</h2></center><img src='rsz_upnfmcholuteca.jpg'><p><a href= https://web.upnfm.edu.hn/test/index.php/centro-universitario-regional-nacaome target= _blank >Sitio Web</a></p>");                                                                                                                                 
+		var UNIHN8= L.MakiMarkers.icon ({icon:"college", color: "#FF7373", size:"l"}); 
+		var UNIHN8= L.marker([14.7699, -88.7737],{icon:UNIHN8});
+		UNIHN8.bindPopup("<center><h2>UPNFM Santa Rosa de Copán</h2><p style=text-align:justify> La Historia de nuestro Centro  Universitario Regional se remonta al año de 1986, siendo sus inicios  iniciando a través del Sistema de Educación a Distancia CUED. Las primeras instalaciones donde funcionó el CURSRC fue  en la Escuela Jerónimo J. Reina,  en la Escuela Manuel Bonilla y en el Instituto Álvaro Contreras, siendo una de las últimas instalaciones físicas las del Centro Universitario Regional de Occidente (CUROC-UNAH) esto hasta el primer periodo del año 2013. </p></center><img src='rsz_11upnfmsantarosadecopan.jpg'><p><a href= https://web.upnfm.edu.hn/test/index.php/centro-regional-de-santa-rosa-de-copan target= _blank >Sitio Web</a></p>");																																	
+//Guatemala//		
+		var UNIGT1= L.MakiMarkers.icon ({icon:"college", color: "#34ebd3", size:"l"}); 
+		var UNIGT1= L.marker([14.538667, -90.612886],{icon:UNIGT1});
+		UNIGT1.bindPopup("<center><h3>Escuela Nacional Central de Agricultura</h3></center><img src='rsz_escuela_nacional_central_de_agricultura.jpg'><p><a href= https://www.enca.edu.gt/enca2/ target= _blank >Sitio Web</a></p>");	
+		
+		var UNIGT2= L.MakiMarkers.icon ({icon:"college", color: "#34ebd3", size:"l"}); 
+		var UNIGT2= L.marker([14.802404, -89.531789],{icon:UNIGT2});
+		UNIGT2.bindPopup("<center><h3>Centro Universitario De Oriente -CUNORI-USAC</h3></center><img src='rsz_1centro_universitario_de_oriente_-cunori-usac.jpg'><p><a href= http://cunori.edu.gt/actualidad/noticias/page/2/ target= _blank >Sitio Web</a></p>");
+
+		var UNIGT3= L.MakiMarkers.icon ({icon:"college", color: "#34ebd3", size:"l"}); 
+		var UNIGT3= L.marker([16.919219, -89.885419],{icon:UNIGT3});
+		UNIGT3.bindPopup("<center><h3>Universidad de San Carlos de Guatemala – CUDEP</h3></center><img src='rsz_universidad_de_san_carlos_de_guatemala_–_cudep.jpg'><p><a href= http://aulavirtual.usac.edu.gt/cursoscudep2/ target= _blank >Sitio Web</a></p>");
+
+		var UNIGT4= L.MakiMarkers.icon ({icon:"college", color: "#34ebd3", size:"l"}); 
+		var UNIGT4= L.marker([14.586471, -90.552801],{icon:UNIGT4});
+		UNIGT4.bindPopup("<center><h3>Univ. de San Carlos de Guatemala USAC</h3></center><img src='rsz_1univ_de_san_carlos_de_guatemala_usac.jpg'><p><a href= https://virtual.usac.edu.gt/ target= _blank >Sitio Web</a></p>");
+
+		var UNIGT5= L.MakiMarkers.icon ({icon:"college", color: "#34ebd3", size:"l"}); 
+		var UNIGT5= L.marker([15.033179, -91.151751],{icon:UNIGT5});
+		UNIGT5.bindPopup("<center><h3>Univ. de San Carlos de Guatemala (USAC) II </h3></center><img src='rsz_univ_de_san_carlos_de_guatemala_usac.jpg'><p><a href= https://virtual.usac.edu.gt/ target= _blank >Sitio Web</a></p>");
+		
+//Costa Rica//		
+		var UNICR1= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR1= L.marker([10.086494, -84.479255],{icon:UNICR1});
+		UNICR1.bindPopup("<center><h3>Universidad de Costa Rica UCR Alajuela - San Ramón – Grecia</h3></center><img src='rsz_universidad_de_costa_rica_ucr_alajuela_-_san_ramón_–_grecia.jpg'><p><a href= http://www.so.ucr.ac.cr/ target= _blank >Sitio Web</a></p>");		
+		
+		var UNICR2= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR2= L.marker([10.320413, -84.430469],{icon:UNICR2});
+		UNICR2.bindPopup("<center><h3>Colegio Universitario de Alajuela CUNA Alajuela - San Carlos</h3></center><img src='rsz_colegio_universitario_de_alajuela_cuna_alajuela_-_san_carlos.jpg'><p><a href= https://www.altillo.com/universidades/costarica/Colegio_Universitario_de_Alajuela_CUNA.asp target= _blank >Sitio Web</a></p>");	
+		
+		var UNICR3= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR3= L.marker([9.827239, -83.868911],{icon:UNICR3});
+		UNICR3.bindPopup("<center><h3>Universidad de Costa Rica UCR Paraíso – Turrialba</h3></center><img src='rsz_universidad_de_costa_rica_ucr_paraíso_–_turrialba.jpg'><p><a href= http://www.sa.ucr.ac.cr/index.php/es/ target= _blank >Sitio Web</a></p>");	
+
+		var UNICR4= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR4= L.marker([9.861572, -83.925793],{icon:UNICR4});
+		UNICR4.bindPopup("<center><h3>Colegio Universitario de Cartago CUC Cartago</h3></center><img src='rsz_colegio_universitario_de_cartago_cuc_cartago.jpg'><p><a href= http://www.cuc.ac.cr/app/cms/www/index.php target= _blank >Sitio Web</a></p>");	
+
+		var UNICR5= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR5= L.marker([9.890155, -83.655730],{icon:UNICR5});
+		UNICR5.bindPopup("<center><h3>Centro Agronómico Tropical de Investigación y Enseñanza</h3></center><img src='Centro Agronómico Tropical de Investigación y Enseñanza.jpg'><p><a href= https://www.catie.ac.cr/ target= _blank >Sitio Web</a></p>");
+
+		var UNICR6= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR6= L.marker([9.975078, -84.846599],{icon:UNICR6});
+		UNICR6.bindPopup("<center><h3>Colegio Universitario de Puntarenas CUP Puntarenas</h3></center><img src='Colegio Universitario de Puntarenas CUP Puntarenas.jpg'><p><a href= https://www.altillo.com/universidades/costarica/Colegio_Universitario_de_Puntarenas_CUP.asp target= _blank >Sitio Web</a></p>");
+
+		var UNICR7= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR7= L.marker([8.644633, -83.171548],{icon:UNICR7});
+		UNICR7.bindPopup("<center><h3>Universidad de Costa Rica UCR Puntarenas – Golfito</h3></center><img src='rsz_universidad_de_costa_rica_ucr_puntarenas_–_golfito.jpg'><p><a href= https://recintogolfito.ucr.ac.cr/ target= _blank >Sitio Web</a></p>");
+		
+		var UNICR8= L.MakiMarkers.icon ({icon:"college", color: "#3d34eb", size:"l"}); 
+		var UNICR8= L.marker([8.644633, -83.171548],{icon:UNICR8});
+		UNICR8.bindPopup("<center><h3>Facultad Latinoam. de Cs. Sociales FLACSO San José</h3></center><img src='Facultad Latinoam. de Cs. Sociales FLACSO San José.jpg'><p><a href= http://www.flacso.or.cr/ target= _blank >Sitio Web</a></p>");
+
+//Nicaragua//
+		var UNING1= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING1= L.marker([12.116014, -86.336309],{icon:UNING1});
+		UNING1.bindPopup("<center><h3>Universidad Martín Lutero UML</h3></center><img src='Universidad Martín Lutero UML.jpg'><p><a href= https://uml.edu.ni/ target= _blank >Sitio Web</a></p>");	
+		
+		var UNING2= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING2= L.marker([12.129364, -86.303151],{icon:UNING2});
+		UNING2.bindPopup("<center><h3>Universidad Central de Nicaragua UCN Campus Central</h3></center><img src='Universidad Central de Nicaragua UCN Campus Central.jpg'><p><a href= https://www.ucn.edu.ni/?page_id=949 target= _blank >Sitio Web</a></p>");
+		
+		var UNING3= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING3= L.marker([12.102863, -86.264979],{icon:UNING3});
+		UNING3.bindPopup("<center><h3>Universidad Thomas More</h3></center><img src='Universidad Thomas More.jpg'><p><a href= http://www.unithomasmore.edu.ni/ target= _blank >Sitio Web</a></p>");
+		
+		var UNING4= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING4= L.marker([12.115392, -86.273062],{icon:UNING4});
+		UNING4.bindPopup("<center><h3>Universidad Iberoamericana de Ciencia y Tecnología</h3></center><img src='Universidad Iberoamericana de Ciencia y Tecnología.jpg'><p><a href= https://unicit.edu.ni/ target= _blank >Sitio Web</a></p>");
+	
+		var UNING5= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING5= L.marker([12.128488, -86.272670],{icon:UNING5});
+		UNING5.bindPopup("<center><h3>Universidad Centroamericana</h3></center><img src='Universidad Centroamericana.jpg'><p><a href= https://www.uca.edu.ni/ target= _blank >Sitio Web</a></p>");
+	
+		var UNING6= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING6= L.marker([12.123953, -86.250046],{icon:UNING6});
+		UNING6.bindPopup("<center><h3>Universidad de Ciencias Comerciales</h3></center><img src='Universidad de Ciencias Comerciales.jpg'><p><a href= http://ucc.edu.ni/ target= _blank >Sitio Web</a></p>");
+		
+		var UNING7= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING7= L.marker([12.138862, -86.220896],{icon:UNING7});
+		UNING7.bindPopup("<center><h3>Universidad Politécnica de Nicaragua</h3></center><img src='Universidad Politécnica de Nicaragua.jpg'><p><a href= https://www.upoli.edu.ni/ target= _blank >Sitio Web</a></p>");
+			
+		var UNING8= L.MakiMarkers.icon ({icon:"college", color: "#e5eb34", size:"l"}); 
+		var UNING8= L.marker([13.738198, -84.779881],{icon:UNING8});
+		UNING8.bindPopup("<center><h3>Universidad de las Regiones Autónomas de la Costa Caribe Nicaragüense</h3></center><img src='Universidad de las Regiones Autónomas de la Costa Caribe Nicaragüense.jpg'><p><a href= http://www.uraccan.edu.ni/ target= _blank >Sitio Web</a></p>");
+
+//El Salvador//							
+		var UNISLV1= L.MakiMarkers.icon ({icon:"college", color: "#a234eb", size:"l"}); 
+		var UNISLV1= L.marker([13.507030, -88.184274],{icon:UNISLV1});
+		UNISLV1.bindPopup("<center><h3>Universidad de Oriente</h3></center><img src='Universidad de Oriente.jpg'><p><a href= https://www.univo.edu.sv/ target= _blank >Sitio Web</a></p>");
+		
+		var UNISLV2= L.MakiMarkers.icon ({icon:"college", color: "#a234eb", size:"l"}); 
+		var UNISLV2= L.marker([13.682076, -89.236107],{icon:UNISLV2});
+		UNISLV2.bindPopup("<center><h3>Universidad Centroamericana José Simeón Cañas</h3></center><img src='Universidad Centroamericana José Simeón Cañas.jpg'><p><a href= http://www.uca.edu.sv/ target= _blank >Sitio Web</a></p>");
+		
+		var UNISLV3= L.MakiMarkers.icon ({icon:"college", color: "#a234eb", size:"l"}); 
+		var UNISLV3= L.marker([13.704550, -89.200523],{icon:UNISLV3});
+		UNISLV3.bindPopup("<center><h3>Universidad Salvadoreña Alberto Masferrer USAM</h3></center><img src='Universidad Salvadoreña Alberto Masferrer.jpg'><p><a href= https://www.usam.edu.sv/ target= _blank >Sitio Web</a></p>");
+		
+		var UNISLV4= L.MakiMarkers.icon ({icon:"college", color: "#a234eb", size:"l"}); 
+		var UNISLV4= L.marker([13.713251, -89.189104],{icon:UNISLV4});
+		UNISLV4.bindPopup("<center><h3>UCAD (Universidad Cristiana de las Asambleas de Dios)</h3></center><img src='UCAD Universidad Cristiana de las Asambleas de Dios.jpg'><p><a href= https://www.ucad.edu.sv/site/index.html target= _blank >Sitio Web</a></p>");		
+		
+		
+<!-- CAPAS GEOSERVE	 -->
+				
+		var CentrosregionalesUNAH = L.tileLayer.wms("http://localhost:8080/geoserver/RECU/wms?service=WMS", {
+			layers: "RECU:Centros_Regionales_UNAH",
+			format: 'image/png',
+			transparent: true,
+			version: '1.1.0',
+			attribution: "Capa_SINIT"
+		});
+
+<!-- http://localhost:8080/geoserver/RECU/wms?service=WMS&version=1.1.0&request=GetMap&layers=RECU:Centros_Regionales_UNAH&styles=&bbox=264721.146015004,1469909.711158923,606407.3059502399,1803844.7373657124&width=768&height=750&srs=EPSG:32616&format=application/openlayers -->
+											
+		var LímitesdepartamentalesHN = L.tileLayer.wms("http://geoportal.icf.gob.hn:8081/geoserver/icf/wms?service=WMS", {
+			layers: "icf:m1102va001970_hn",
+			format: 'image/png',
+			transparent: true,
+			version: '1.1.0',
+			attribution: "Portal ICF"
+		});									
+
+<!-- http://geoportal.icf.gob.hn:8081/geoserver/icf/wms?service=WMS&version=1.1.0&request=GetMap&layers=icf:m1102va001970_hn&styles=&bbox=245963.4442,1435261.4386,926399.9563,1826447.901&width=574&height=330&srs=EPSG:32616&format=application/openlayers-->
+				
+
+
+<!-- CAPA GeoJson -->
+		var poligonoUNAHCU= L.geoJson (POLUNAHCU); 
+	 
+	
+//Grupos de Capas// 										
+		var GrupoUNAS = L.layerGroup ([imagen1,imagen2,imagen3,imagen4,imagen5]);
+		var GrupoUNIHN = L.layerGroup ([UNIHN1,UNIHN2,UNIHN3,UNIHN4,UNIHN5,UNIHN6,UNIHN7,UNIHN8]);
+		var GrupoUNIGT = L.layerGroup ([UNIGT1,UNIGT2,UNIGT3,UNIGT4,UNIGT5]); 
+		var GrupoUNICR = L.layerGroup ([UNICR1,UNICR2,UNICR3,UNICR4,UNICR5,UNICR6,UNICR7,UNICR8]);
+		var GrupoUNING = L.layerGroup ([UNING1,UNING2,UNING3,UNING4,UNING5,UNING6,UNING7,UNING8]);
+		var GrupoUNISLV = L.layerGroup ([UNISLV1,UNISLV2,UNISLV3,UNISLV4]);
+	
+		
+var OverlayLayers = {				
+			"Universidades Autónomas de Centro América": GrupoUNAS,
+			"Universidades Públicas de Honduras": GrupoUNIHN,
+			"Universidades Públicas de Guatemala": GrupoUNIGT,
+			"Universidades Públicas de Costa Rica": GrupoUNICR,
+			"Universidades Públicas de Nicaragua": GrupoUNING,
+			"Universidades Públicas de El Salvador": GrupoUNISLV,
+			"Centros Regionales UNAH": CentrosregionalesUNAH,
+			"Límites Departamentales Honduras": LímitesdepartamentalesHN,
+			"Poligono Ciudad Universitaria UNAH": poligonoUNAHCU,
+			}
+		new L.control.layers(BaseLayers, OverlayLayers,{collapsed:true}).addTo(map);
+		
+		var miniMap = new L.Control.MiniMap(osm2,{ toggleDisplay: true, position: 'bottomright' }).addTo(map);
+		var escala = L.control.scale(map).addTo(map);
+		var mouse = new L.Control.MousePosition(map).addTo(map);
+	</script>
+	
+</body>
+<p><b><font size = "6", color = "orange">Cristian Sánchez, MOGT-5, 2019</font></b></p>
+
+</html>
